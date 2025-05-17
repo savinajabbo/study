@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="24.3.0" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Concept" representedClassName="Concept" syncable="YES" codeGenerationType="class">
+        <attribute name="content" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="masteryLevel" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="parentID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
+        <relationship name="reviews" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Review" inverseName="concept" inverseEntity="Review"/>
+    </entity>
+    <entity name="Review" representedClassName="Review" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="intervalDays" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="nextReviewDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="recallGrade" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="reviewTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="concept" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Concept" inverseName="reviews" inverseEntity="Concept"/>
+    </entity>
+    <entity name="StudySession" representedClassName="StudySession" syncable="YES" codeGenerationType="class">
+        <attribute name="endTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="technique" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="AICoachInteraction" representedClassName="AICoachInteraction" syncable="YES" codeGenerationType="class">
+        <attribute name="conceptID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="interactionTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="prompt" optional="YES" attributeType="String"/>
+        <attribute name="response" optional="YES" attributeType="String"/>
+    </entity>
+</model> 

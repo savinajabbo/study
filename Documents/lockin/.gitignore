@@ -1,6 +1,4 @@
-# Ignore environment variable files
 *.env
 
-# Ignore all text files
 *.txt
 .DS_Store
