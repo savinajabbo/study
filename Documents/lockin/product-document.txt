@@ -1,0 +1,296 @@
+StudyBuddy – Personalized AI Study Companion
+
+1. Executive Summary
+
+StudyBuddy is a mobile‑first learning platform that schedules reviews with adaptive spaced‑repetition, tracks concept mastery, and embeds a privacy‑respecting on‑device language model to act as each learner’s personal study coach. The v1 target is iOS (Swift) with Supabase for cloud persistence, GPT‑4o for cloud reasoning, and a 2–4 B parameter on‑device model (e.g., Phi‑3‑Mini or OpenELM‑3B) for offline coaching.
+
+2. Problem Statement
+
+Students waste time on inefficient, fixed‑interval reviews.
+
+Popular flashcard apps don’t explain how to study or adjust to individual forgetting curves.
+
+Cloud‑only AI tools raise privacy concerns and fail when offline.
+
+3. Solution Overview
+
+Adaptive Learning Engine — implements FSRS‑based intervals fine‑tuned per user.
+
+Personal AI Coach — hybrid LLM stack (on‑device + GPT‑4o) for context‑aware guidance.
+
+Technique Recommender — maps learner state to evidence‑based study techniques.
+
+Analytics Dashboard — surfaces retention stats, streaks, and weak concept clusters.
+
+4. Value Proposition
+
+Stakeholder
+
+Pain Point
+
+How StudyBuddy Helps
+
+Students
+
+Forget material, unsure of best study method
+
+Automated schedule + AI recommendations
+
+Parents
+
+Screen‑time concern & data privacy
+
+On‑device processing, COPPA‑ready cloud
+
+Schools
+
+Need measurable learning outcomes
+
+Exportable mastery reports & LMS hooks
+
+6. Competitive Landscape
+
+App
+
+Strengths
+
+Weaknesses
+
+Anki
+
+Open, powerful add‑ons
+
+Steep UX, no AI guidance
+
+Quizlet
+
+Large community decks
+
+Subscription paywall, cloud dependency
+
+RemNote
+
+All‑in‑one notes + SR
+
+Limited offline, small user base
+
+StudyBuddy differentiates with true offline AI + technique recommender.
+
+7. Core Features
+
+7.1 Adaptive Learning Engine
+
+FSRS v4 baseline with per‑user regression on recall curves.
+
+7.2 Personal AI Study Buddy
+
+Chat UI (LLM.swift + GPT‑4o fallback).
+
+Generates mnemonics, micro‑quizzes, Feynman prompts.
+
+7.3 Technique Recommender
+
+Rule‑based mapping to start; evolves into contextual bandit optimizing “retained bits per minute.”
+
+7.4 Content Creation & Import
+
+Markdown, image‑OCR, and CSV import.
+
+Community deck sharing via Supabase Row‑Level Security.
+
+7.5 Analytics Dashboard
+
+Retention %, upcoming load, weak topics heat‑map (Swift Charts).
+
+8. System Architecture
+
+flowchart TD
+    subgraph Client (iOS)
+        UI[SwiftUI Front‑end]
+        LocalDB[(SQLite – GRDB)]
+        OnDeviceLLM[[MLC LLM – Phi‑3]]
+        Scheduler[/FSRS Engine/]
+    end
+    subgraph Cloud (Supabase)
+        PG[(Postgres + pgvector)]
+        EdgeFX[Edge Functions]
+        Auth[Row‑Level Auth]
+    end
+    GPT[(OpenAI GPT‑4o)]
+    UI --read/write--> LocalDB
+    Scheduler --queues--> LocalDB
+    UI --HTTPS--> EdgeFX
+    EdgeFX --SQL--> PG
+    UI --HTTPS--> GPT
+
+9. Data Model (simplified)
+
+Table
+
+Key Columns
+
+users
+
+id, device_hash, settings_json
+
+cards
+
+id, user_id, front, back, concept_id, tags
+
+reviews
+
+id, card_id, review_time, recall_grade, latency_ms, interval_days
+
+concepts
+
+id, user_id, name, parent_id
+
+sessions
+
+id, user_id, start_ts, end_ts
+
+lora_adapters
+
+id, user_id, gguf_delta_path, created_ts
+
+10. Algorithms
+
+FSRS Adaptation → minimize RMSE between predicted & actual recall.
+
+Bayesian Knowledge Tracing for concept mastery.
+
+Technique Bandit → reward = future recall × user‑rated helpfulness.
+
+11. Privacy & Compliance
+
+Local‑first storage; user consents before cloud sync.
+
+GDPR & COPPA toggle: under‑13 mode disables chat logs.
+
+Data export & delete endpoints via Supabase Functions.
+
+12. Tech Stack
+
+Layer
+
+Choice
+
+Rationale
+
+Mobile
+
+Swift + SwiftUI
+
+Native performance & Apple Neural Engine access
+
+Local AI
+
+MLC LLM / Core ML
+
+Metal acceleration, 4‑bit quant
+
+Backend
+
+Supabase (Postgres, EdgeFX)
+
+Instant auth, RLS security, pgvector
+
+Cloud AI
+
+OpenAI GPT‑4o
+
+Best‑in‑class reasoning, easy fine‑tune
+
+13. Roadmap
+
+Phase
+
+Timeline
+
+Deliverables
+
+MVP
+
+6 wks
+
+Flashcards, FSRS scheduling, Supabase sync
+
+Beta
+
++4 wks
+
+On‑device LLM chat, analytics dashboard
+
+v1.0
+
++6 wks
+
+Technique recommender, App Store launch
+
+v1.5
+
++8 wks
+
+Teacher dashboard, shared decks
+
+14. Success Metrics
+
+DAU / MAU ≥ 30 %
+
+Average retained recall ≥ 85 % after 30 days
+
+App Store rating ≥ 4.6
+
+Cloud cost per active user ≤ $0.05/day
+
+15. Risks & Mitigations
+
+Risk
+
+Impact
+
+Mitigation
+
+LLM latency
+
+Poor UX
+
+Cache on‑device model; prefetch prompts
+
+Privacy concerns
+
+User churn
+
+Edge‑only mode, transparent policy
+
+Content quality
+
+Retention drops
+
+Community moderation + rating
+
+16. Team & Stakeholders
+
+Product Lead – you (Founder)
+
+iOS Engineer(s) – Swift, Core ML
+
+ML Engineer – LLM fine‑tuning, FSRS research
+
+Designer – SwiftUI, edu UX
+
+Advisor – Learning science PhD
+
+17. Next Steps
+
+Prototype card CRUD + FSRS scheduler in Swift.
+
+Set up Supabase project, enable RLS.
+
+Convert Phi‑3‑Mini.gguf → MLC, benchmark on iPhone.
+
+Draft prompt templates for GPT‑4o.
+
+Recruit 10 alpha testers.
+
+Version 0.1 – May 17 2025
